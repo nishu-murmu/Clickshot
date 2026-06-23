@@ -19,7 +19,7 @@ pub fn open_overlay(app: &tauri::AppHandle) {
 pub fn full_screenshot_handler(app: &tauri::AppHandle) {
     if let Ok(current_time) = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH) {
         let filename = String::from(current_time.as_secs().to_string());
-        if let Some(path) = capture::capture_fullscreen_shot(filename) {
+        if let Some(path) = capture::capture_fullscreen_shot(filename, app) {
             if let Ok(val) = app.opener().open_path(path, None::<&str>) {
                 println!("screenshot captured! {:?}", val);
             } else {
