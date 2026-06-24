@@ -32,7 +32,7 @@ pub fn full_screenshot_handler(app: &tauri::AppHandle) {
 pub fn region_screenshot_handler(app: &tauri::AppHandle, x: u32, y: u32, width: u32, height: u32) {
     if let Ok(current_time) = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH) {
         let filename = String::from(current_time.as_secs().to_string());
-        if let Some(path) = capture::capture_region_shot(filename, x, y, width, height) {
+        if let Some(path) = capture::capture_region_shot(filename, app, x, y, width, height) {
             if let Ok(val) = app.opener().open_path(path, None::<&str>) {
                 println!("screenshot captured! {:?}", val);
             } else {

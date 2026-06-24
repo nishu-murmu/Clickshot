@@ -9,9 +9,9 @@ fn get_file_path(username: String, name: String, app: &AppHandle) -> String {
         "linux" => format!("/home/{username}/Pictures/Screenshots/{name}.png"),
         "windows" => {
             if let Ok(_) = app.path().picture_dir() {
-                let path = r"C:/Users/{username}/Pictures/Screenshots/";
+                let path = format!(r"C:/Users/{username}/Pictures/Screenshots/");
                 fs::create_dir_all(path).unwrap();
-                let path = r"C:/Users/{username}/Pictures/Screenshots/{name}.png";
+                let path = format!(r"C:/Users/{username}/Pictures/Screenshots/{name}.png");
                 String::from(path)
             } else {
                 let mut path = PathBuf::from(r"C:Users\");
@@ -43,6 +43,7 @@ pub fn capture_fullscreen_shot(name: String, app: &AppHandle) -> Option<String> 
 
 pub fn capture_region_shot(
     name: String,
+    app: &AppHandle,
     x: u32,
     y: u32,
     width: u32,
@@ -51,7 +52,7 @@ pub fn capture_region_shot(
     let monitors = Monitor::all().unwrap();
     if let Some(username) = utils::get_user_name() {
         if let Some(primary) = monitors.first() {
-            let path = format!("/home/{username}/Pictures/Screenshots/{name}.png");
+            let path = get_file_path(username, name, app);
             primary
                 .capture_region(x, y, width, height)
                 .unwrap()
