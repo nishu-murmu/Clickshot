@@ -44,16 +44,31 @@ pub fn base64_to_image(base_64_str: String, app: &AppHandle) -> String {
         let filename = String::from(current_time.as_secs().to_string());
         if let Some(username) = utils::get_user_name() {
             let path = get_file_path(username, filename, app);
-            let bytes = general_purpose::STANDARD
-                .decode(base_64_str)
-                .map_err(|e| e.to_string())
-                .unwrap();
-            load_from_memory(&bytes)
-                .map_err(|e| e.to_string())
-                .unwrap()
-                .to_rgba8()
-                .save(&path)
-                .unwrap();
+            let bytes = match general_purpose::STANDARD.decode(base_64_str) {
+                Ok(res) => res,
+                Err(err) => {
+                    eprintln!("Failed to decode base64: {:?}", err);
+                    return String::from("Failed to parse base64!");
+                }
+            };
+            let image = match load_from_memory(&bytes) {
+                Ok(res) => res,
+                Err(err) => {
+                    eprintln!("Failed to load image from memory {:?}", err);
+                    return String::from("Failed to load image from memory")
+                }
+            };
+            match image.to_rgb8().save(&path) {
+                Ok(res) => {
+                    dbg!(&res);
+                    res
+                },
+                Err(err) => {
+                    eprintln!("Failed to parse in rgb8! {:?}", err);
+                    return String::from("Failed to parse in rgb8!");
+                }
+            };
+
             return path;
         } else {
             return String::from("Failed to save image!");

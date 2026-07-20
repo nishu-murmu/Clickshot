@@ -71,7 +71,8 @@ const App = () => {
         canvas.height = height
         const ctx = canvas.getContext("2d")
         ctx?.drawImage(image, x, y, width, height, 0, 0, width, height)
-        const croppedBase64 = canvas.toDataURL("image/jpeg")
+        const croppedBase64WithPrefix = canvas.toDataURL("image/jpeg")
+        const croppedBase64 = croppedBase64WithPrefix.slice(croppedBase64WithPrefix.indexOf(",")) 
         resolve(croppedBase64)
       }
       image.onerror = () => {
@@ -87,7 +88,6 @@ const App = () => {
         const { x, y, width, height } = holePunchRef.current.attrs;
         const bgImage = localStorage.getItem("bgImage") || ""
         const cropped_base_64_image = (await cropBase64ImageHandler(bgImage, x, y, width, height)) as string
-        console.log(cropped_base_64_image)
         const response = await invoke("region_screenshot_command", {cropped_base_64_image});
         invoke("close_overlay_command")
         console.log(response, 'response from region screenshot')

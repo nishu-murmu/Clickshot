@@ -9,7 +9,7 @@ pub fn close_overlay_command(app: tauri::AppHandle) {
     }
 }
 
-#[tauri::command]
+#[tauri::command(rename_all = "snake_case")]
 pub fn region_screenshot_command(app: tauri::AppHandle, cropped_base_64_image: String) {
     capture::base64_to_image(cropped_base_64_image, &app);
 }

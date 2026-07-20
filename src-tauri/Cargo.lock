@@ -3,6 +3,19 @@
 version = 4
 
 [[package]]
+name = "ClickShot"
+version = "0.1.0"
+dependencies = [
+ "base64 0.22.1",
+ "image",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-global-shortcut",
+ "tauri-plugin-opener",
+ "xcap",
+]
+
+[[package]]
 name = "adler2"
 version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -670,19 +683,6 @@ dependencies = [
  "glob",
  "libc",
  "libloading 0.8.9",
-]
-
-[[package]]
-name = "clickshot"
-version = "0.1.0"
-dependencies = [
- "base64 0.22.1",
- "image",
- "tauri",
- "tauri-build",
- "tauri-plugin-global-shortcut",
- "tauri-plugin-opener",
- "xcap",
 ]
 
 [[package]]
