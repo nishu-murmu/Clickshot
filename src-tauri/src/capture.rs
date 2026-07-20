@@ -8,6 +8,7 @@ use std::{env::consts::OS, path::PathBuf};
 use tauri::{AppHandle, Emitter, Manager};
 use xcap::Monitor;
 
+/// Gets the file Path from the user's system, default: $USER/Pictures/Screenshots/, if the directory is not found then it is created.
 fn get_file_path(username: String, name: String, app: &AppHandle) -> String {
     match OS {
         "linux" => format!("/home/{username}/Pictures/Screenshots/{name}.png"),
@@ -33,12 +34,14 @@ fn get_file_path(username: String, name: String, app: &AppHandle) -> String {
     }
 }
 
+/// Passing base64 type of image to React's frontend for post processing/editing.
 fn image_to_base64(image: RgbaImage) -> String {
     let mut buffer = Cursor::new(Vec::new());
     image.write_to(&mut buffer, ImageFormat::Png).unwrap();
     general_purpose::STANDARD.encode(buffer.get_ref())
 }
 
+/// This function stores the actual image after image is captured and post processing/editing is done by the user.
 pub fn base64_to_image(base_64_str: String, app: &AppHandle) -> String {
     if let Ok(current_time) = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH) {
         let filename = String::from(current_time.as_secs().to_string());
@@ -78,6 +81,7 @@ pub fn base64_to_image(base_64_str: String, app: &AppHandle) -> String {
     }
 }
 
+/// Command function handler for taking screenshot.
 pub fn capture_screenshot(app: &AppHandle) -> Option<String> {
     let monitors = Monitor::all().unwrap();
     if let Some(primary) = monitors.first() {
