@@ -12,32 +12,35 @@ pub fn init(app: &tauri::App) {
         "Full Screenshot",
         true,
         None::<&str>,
-    ).unwrap();
+    )
+    .unwrap();
     let region_screenshot_i = MenuItem::with_id(
         app,
         "region_screenshot",
         "Region Screenshot",
         true,
         None::<&str>,
-    ).unwrap();
+    )
+    .unwrap();
     let menu = Menu::with_items(app, &[&quit_i, &full_screenshot_i, &region_screenshot_i]).unwrap();
     let tray = TrayIconBuilder::new()
         .icon(app.default_window_icon().unwrap().clone())
         .menu(&menu)
-        .build(app).unwrap();
+        .build(app)
+        .unwrap();
     tray.on_menu_event(|app, event| match event.id.as_ref() {
         "quit" => {
             app.exit(0);
             println!("App exited!");
-        },
+        }
         "full_screenshot" => {
-            utils::full_screenshot_handler(&app);
+            // utils::full_screenshot_handler(&app);
             println!("Full Screenshot taken!");
-        },
+        }
         "region_screenshot" => {
             utils::open_overlay(app);
             println!("Region Screenshot taken!");
-        },
+        }
         _ => {
             println!("Something went wrong!");
         }

@@ -15,7 +15,6 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             commands::close_overlay_command,
-            commands::full_screenshot_command,
             commands::region_screenshot_command
         ])
         .run(tauri::generate_context!())

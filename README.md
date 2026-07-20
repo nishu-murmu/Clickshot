@@ -1,7 +1,33 @@
-# Tauri + React + Typescript
+<div align="center">
+# Clickshot
+ShareX like Screenshot Application for Linux.
+</div>
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
+## Inspiration
+This is application is a passion project, I wanted to create something like shareX but unfornately it wasn't available for linux. So decided to create my own.
+I also wanted to learn a new language for this and I chose the Lord's language for it.
 
-## Recommended IDE Setup
+### TODOS (0.1.0-release):
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+- [x] Capturing Screenshot.
+  - [x] Full Screenshot.
+  - [x] Region Screenshot.
+- [ ] Making edit window.
+  - [ ] Pencil
+  - [ ] Line
+  - [ ] Text
+  - [ ] Rectangle/Square
+  - [ ] Circle
+  - [ ] Blur
+  - [ ] Number
+  - [ ] Undo/Redo
+- [ ] Screenshot url generation (The most important feature).
+- [ ] Customization and keybindings for all the features.
+
+### Contributions:
+
+All types of contributions are welcomed for this project.
+
+### License:
+
+Published under AGPL-3.0 license.

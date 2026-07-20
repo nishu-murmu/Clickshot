@@ -1,0 +1,26 @@
+import { invoke } from "@tauri-apps/api/core";
+import { useAtomValue } from "jotai";
+import atoms from "../atoms";
+
+const useShortcuts = () => {
+
+  const isRegionActive = useAtomValue(atoms.isRegionActiveAtom);
+  const bgImage = useAtomValue(atoms.bgImageAtom);
+
+  const escapeShortcut = (e: KeyboardEvent) => {
+    if (e.key === "Escape") invoke("close_overlay_command");
+  }
+
+  const enterShortcut = () => {
+    if (!isRegionActive) {
+      invoke("save_full_screenshot_command", { base_64_str: bgImage })
+    }
+  }
+
+  return {
+    escapeShortcut,
+    enterShortcut
+  }
+}
+
+export default useShortcuts;

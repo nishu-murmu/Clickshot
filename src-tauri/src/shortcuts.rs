@@ -2,17 +2,16 @@ use crate::utils;
 
 pub fn init(app: &tauri::App) {
     use tauri_plugin_global_shortcut::{
-        Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState,
+        Code, GlobalShortcutExt, Shortcut, ShortcutState,
     };
 
-    let ctrl_s_shortcut = Shortcut::new(Some(Modifiers::CONTROL), Code::KeyS);
+    let print_shortcut = Shortcut::new(None, Code::PrintScreen);
 
     app.handle()
         .plugin(
             tauri_plugin_global_shortcut::Builder::new()
                 .with_handler(move |app, shortcut, event| {
-                    println!("{:?}", shortcut);
-                    if shortcut == &ctrl_s_shortcut {
+                    if shortcut == &print_shortcut {
                         match event.state() {
                             ShortcutState::Pressed => {
                                 utils::open_overlay(app);
@@ -27,5 +26,5 @@ pub fn init(app: &tauri::App) {
         )
         .unwrap();
 
-    app.global_shortcut().register(ctrl_s_shortcut).unwrap();
+    app.global_shortcut().register(print_shortcut).unwrap();
 }
