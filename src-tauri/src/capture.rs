@@ -47,7 +47,12 @@ pub fn base64_to_image(base_64_str: String, app: &AppHandle) -> String {
         let filename = String::from(current_time.as_secs().to_string());
         if let Some(username) = utils::get_user_name() {
             let path = get_file_path(username, filename, app);
-            let bytes = match general_purpose::STANDARD.decode(base_64_str) {
+            let image_data = base_64_str
+                .split_once(",")
+                .map(|(_, data)| data)
+                .unwrap_or(base_64_str.as_str())
+                .trim();
+            let bytes = match general_purpose::STANDARD.decode(image_data) {
                 Ok(res) => res,
                 Err(err) => {
                     eprintln!("Failed to decode base64: {:?}", err);
@@ -63,7 +68,6 @@ pub fn base64_to_image(base_64_str: String, app: &AppHandle) -> String {
             };
             match image.to_rgb8().save(&path) {
                 Ok(res) => {
-                    dbg!(&res);
                     res
                 },
                 Err(err) => {

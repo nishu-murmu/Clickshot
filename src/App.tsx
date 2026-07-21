@@ -71,9 +71,7 @@ const App = () => {
         canvas.height = height
         const ctx = canvas.getContext("2d")
         ctx?.drawImage(image, x, y, width, height, 0, 0, width, height)
-        const croppedBase64WithPrefix = canvas.toDataURL("image/jpeg")
-        const croppedBase64 = croppedBase64WithPrefix.slice(croppedBase64WithPrefix.indexOf(",")) 
-        resolve(croppedBase64)
+        resolve(canvas.toDataURL("image/jpeg"))
       }
       image.onerror = () => {
         reject(new Error("Failed to load image while cropping the image!"))
@@ -83,14 +81,17 @@ const App = () => {
 
   useEffect(() => {
     const handleKeyDown = async (e: KeyboardEvent) => {
+      const bgImage = localStorage.getItem("bgImage") || ""
       escapeShortcut(e)
-      if (e.key === "Enter" && Object.keys(holePunchRef.current.attrs)) {
-        const { x, y, width, height } = holePunchRef.current.attrs;
-        const bgImage = localStorage.getItem("bgImage") || ""
+      if (e.key === "Enter" && Object.keys(holePunchRef) && holePunchRef.current.attrs.height && holePunchRef.current.attrs.width) {
+        const { x, y, width, height } = holePunchRef.current.attrs
         const cropped_base_64_image = (await cropBase64ImageHandler(bgImage, x, y, width, height)) as string
-        const response = await invoke("region_screenshot_command", {cropped_base_64_image});
+        await invoke("region_screenshot_command", { cropped_base_64_image });
         invoke("close_overlay_command")
-        console.log(response, 'response from region screenshot')
+      } else {
+        const response = await invoke("full_screenshot_command", { base_64_image: bgImage });
+        console.log(response, 'response')
+        invoke("close_overlay_command")
       }
     };
 
