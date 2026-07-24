@@ -35,7 +35,7 @@ fn get_file_path(username: String, name: String, app: &AppHandle) -> String {
 }
 
 /// Passing base64 type of image to React's frontend for post processing/editing.
-fn image_to_base64(image: RgbaImage) -> String {
+pub fn image_to_base64(image: RgbaImage) -> String {
     let mut buffer = Cursor::new(Vec::new());
     image.write_to(&mut buffer, ImageFormat::Png).unwrap();
     general_purpose::STANDARD.encode(buffer.get_ref())
@@ -91,7 +91,7 @@ pub fn capture_screenshot(app: &AppHandle) -> Option<String> {
     if let Some(primary) = monitors.first() {
         let image = primary.capture_image().unwrap();
         let base_64_str = image_to_base64(image);
-        app.emit_to("main", "screenshot-ready", base_64_str)
+        app.emit_to("overlay", "screenshot-ready", base_64_str)
             .unwrap();
     }
     None

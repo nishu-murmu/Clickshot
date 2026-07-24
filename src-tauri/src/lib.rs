@@ -3,6 +3,7 @@ mod commands;
 mod shortcuts;
 mod system_tray;
 mod utils;
+mod windows;
 
 pub fn run() {
     tauri::Builder::default()
@@ -16,7 +17,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             commands::close_overlay_command,
             commands::region_screenshot_command,
-            commands::full_screenshot_command
+            commands::full_screenshot_command,
+            commands::open_settings_window_command
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

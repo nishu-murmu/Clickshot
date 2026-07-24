@@ -29,10 +29,16 @@ export default defineConfig(async () => ({
       ignored: ["**/src-tauri/**"],
     },
   },
+  resolve: {
+    alias: {
+      "@": resolve(__dirname, "./src")
+    }
+  },
   build: {
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'index.html'),
+        overlay: resolve(__dirname, 'html/overlay.html'),
+        settings: resolve(__dirname, 'html/settings.html'),
       },
     },
   },

@@ -34,6 +34,7 @@ pub fn init(app: &tauri::App) {
             println!("App exited!");
         }
         "full_screenshot" => {
+            utils::get_full_screenshot_in_background(app);
             println!("Full Screenshot taken!");
         }
         "region_screenshot" => {

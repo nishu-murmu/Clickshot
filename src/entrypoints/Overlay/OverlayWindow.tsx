@@ -2,11 +2,11 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { useState, useRef, useEffect } from 'react';
 import { Stage, Layer, Transformer, Rect } from 'react-konva';
-import useShortcuts from './hooks/use-shortcuts';
+import useShortcuts from '../../hooks/use-shortcuts';
 import { useAtom } from 'jotai';
-import atoms from './atoms';
+import atoms from '../../atoms';
 
-const App = () => {
+const OverlayWindow = () => {
   const [sel, setSel] = useState({ visible: false, x1: 0, y1: 0, x2: 0, y2: 0 });
   const [bgImage, setBgImage] = useAtom(atoms.bgImageAtom);
   const isDrawing = useRef(false);
@@ -89,6 +89,8 @@ const App = () => {
         await invoke("region_screenshot_command", { cropped_base_64_image });
         invoke("close_overlay_command")
       } else {
+        invoke("open_settings_window_command")
+        self.postMessage({ data: bgImage }, "*")
         const response = await invoke("full_screenshot_command", { base_64_image: bgImage });
         console.log(response, 'response')
         invoke("close_overlay_command")
@@ -183,4 +185,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default OverlayWindow;

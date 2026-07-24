@@ -15,7 +15,7 @@
         "label": "hidden-overlay",
         "create": true,
         "visible": false,
-        "url": "hidden.html",
+        "url": "html/overlay.html",
         "height": 600,
         "width": 800
       }
