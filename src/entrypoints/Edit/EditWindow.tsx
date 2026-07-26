@@ -6,7 +6,7 @@ import useShortcuts from '@/hooks/use-shortcuts';
 import { useAtom } from 'jotai';
 import atoms from '@/atoms';
 
-const SettingsWindow = () => {
+const EditWindow = () => {
   const [sel, setSel] = useState({ visible: false, x1: 0, y1: 0, x2: 0, y2: 0 });
   const [bgImage, setBgImage] = useAtom(atoms.bgImageAtom);
   const isDrawing = useRef(false);
@@ -89,7 +89,7 @@ const SettingsWindow = () => {
         await invoke("region_screenshot_command", { cropped_base_64_image });
         invoke("close_overlay_command")
       } else {
-        invoke("open_settings_window_command")
+        invoke("open_Edit_window_command")
         self.postMessage({ data: bgImage }, "*")
         const response = await invoke("full_screenshot_command", { base_64_image: bgImage });
         console.log(response, 'response')
@@ -185,4 +185,4 @@ const SettingsWindow = () => {
   );
 };
 
-export default SettingsWindow;
+export default EditWindow;

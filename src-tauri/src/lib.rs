@@ -18,7 +18,7 @@ pub fn run() {
             commands::close_overlay_command,
             commands::region_screenshot_command,
             commands::full_screenshot_command,
-            commands::open_settings_window_command
+            commands::open_edit_window_command
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

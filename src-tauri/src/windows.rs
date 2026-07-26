@@ -10,9 +10,9 @@ pub fn open_overlay_window(app: &tauri::AppHandle) {
         .unwrap();
 }
 
-pub fn open_settings_window(app: &tauri::AppHandle) {
-    WebviewWindowBuilder::new(app, "settings", WebviewUrl::App("html/settings.html".into()))
-        .title("ClickX-Settings")
+pub fn open_edit_window(app: &tauri::AppHandle) {
+    WebviewWindowBuilder::new(app, "edit", WebviewUrl::App("html/edit.html".into()))
+        .title("ClickX-Edit")
         .transparent(true)
         .focused(true)
         .build()

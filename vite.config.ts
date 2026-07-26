@@ -38,7 +38,7 @@ export default defineConfig(async () => ({
     rollupOptions: {
       input: {
         overlay: resolve(__dirname, 'html/overlay.html'),
-        settings: resolve(__dirname, 'html/settings.html'),
+        edit: resolve(__dirname, 'html/edit.html'),
       },
     },
   },

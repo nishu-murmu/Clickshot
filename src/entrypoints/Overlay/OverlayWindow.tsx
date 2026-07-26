@@ -89,7 +89,7 @@ const OverlayWindow = () => {
         await invoke("region_screenshot_command", { cropped_base_64_image });
         invoke("close_overlay_command")
       } else {
-        invoke("open_settings_window_command")
+        invoke("open_edit_window_command")
         self.postMessage({ data: bgImage }, "*")
         const response = await invoke("full_screenshot_command", { base_64_image: bgImage });
         console.log(response, 'response')

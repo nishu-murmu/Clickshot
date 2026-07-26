@@ -1,5 +1,4 @@
 use tauri::{Manager};
-
 use crate::{capture, windows};
 
 #[tauri::command]
@@ -20,6 +19,6 @@ pub fn full_screenshot_command(app: tauri::AppHandle, base_64_image: String) {
 }
 
 #[tauri::command(rename_all = "snake_case")]
-pub fn open_settings_window_command(app: tauri::AppHandle) {
-    windows::open_settings_window(&app);
+pub fn open_edit_window_command(app: tauri::AppHandle) {
+    windows::open_edit_window(&app);
 }
