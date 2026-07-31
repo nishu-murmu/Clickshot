@@ -1,10 +1,11 @@
 import { invoke } from '@tauri-apps/api/core';
-import { listen } from '@tauri-apps/api/event';
+import { emitTo, listen } from '@tauri-apps/api/event';
 import { useState, useRef, useEffect } from 'react';
 import { Stage, Layer, Transformer, Rect } from 'react-konva';
 import useShortcuts from '../../hooks/use-shortcuts';
 import { useAtom } from 'jotai';
 import atoms from '../../atoms';
+import { emitKeys, sleep } from '@/utils/config';
 
 const OverlayWindow = () => {
   const [sel, setSel] = useState({ visible: false, x1: 0, y1: 0, x2: 0, y2: 0 });
@@ -60,40 +61,43 @@ const OverlayWindow = () => {
       trRef.current?.nodes([]);
     }
   };
-
-  const cropBase64ImageHandler = (base64Str: string, x: number, y: number, width: number, height: number): Promise<string | Error> => {
-    return new Promise((resolve, reject) => {
-      const image = new Image()
-      image.src = base64Str
-      image.onload = () => {
-        const canvas = document.createElement("canvas")
-        canvas.width = width
-        canvas.height = height
-        const ctx = canvas.getContext("2d")
-        ctx?.drawImage(image, x, y, width, height, 0, 0, width, height)
-        resolve(canvas.toDataURL("image/jpeg"))
-      }
-      image.onerror = () => {
-        reject(new Error("Failed to load image while cropping the image!"))
-      }
-    })
-  }
-
+  //
+  // const cropBase64ImageHandler = (base64Str: string, x: number, y: number, width: number, height: number): Promise<string | Error> => {
+  //   return new Promise((resolve, reject) => {
+  //     const image = new Image()
+  //     image.src = base64Str
+  //     image.onload = () => {
+  //       const canvas = document.createElement("canvas")
+  //       canvas.width = width
+  //       canvas.height = height
+  //       const ctx = canvas.getContext("2d")
+  //       ctx?.drawImage(image, x, y, width, height, 0, 0, width, height)
+  //       resolve(canvas.toDataURL("image/jpeg"))
+  //     }
+  //     image.onerror = () => {
+  //       reject(new Error("Failed to load image while cropping the image!"))
+  //     }
+  //   })
+  // }
+  //
   useEffect(() => {
     const handleKeyDown = async (e: KeyboardEvent) => {
-      const bgImage = localStorage.getItem("bgImage") || ""
       escapeShortcut(e)
-      if (e.key === "Enter" && Object.keys(holePunchRef) && holePunchRef.current.attrs.height && holePunchRef.current.attrs.width) {
-        const { x, y, width, height } = holePunchRef.current.attrs
-        const cropped_base_64_image = (await cropBase64ImageHandler(bgImage, x, y, width, height)) as string
-        await invoke("region_screenshot_command", { cropped_base_64_image });
-        invoke("close_overlay_command")
-      } else {
-        invoke("open_edit_window_command")
-        self.postMessage({ data: bgImage }, "*")
-        const response = await invoke("full_screenshot_command", { base_64_image: bgImage });
-        console.log(response, 'response')
-        invoke("close_overlay_command")
+      if (e.key === "Enter") {
+        await invoke("open_edit_window_command")
+        await sleep(1000)
+        const bgImage = localStorage.getItem("bgImage") || ""
+        emitTo("edit", emitKeys.send_base64_img_edit_window, { bgImage })
+        if (Object.keys(holePunchRef) && holePunchRef.current.attrs.height && holePunchRef.current.attrs.width) {
+          // const { x, y, width, height } = holePunchRef.current.attrs
+          // const cropped_base_64_image = (await cropBase64ImageHandler(bgImage, x, y, width, height)) as string
+          // await invoke("region_screenshot_command", { cropped_base_64_image });
+          invoke("close_overlay_window_command")
+        } else {
+          // const response = await invoke("full_screenshot_command", { base_64_image: bgImage });
+          invoke("close_overlay_window_command")
+        }
+
       }
     };
 
@@ -103,7 +107,7 @@ const OverlayWindow = () => {
       isDrawing.current = false;
     };
 
-    listen("screenshot-ready", (event: any) => {
+    listen(emitKeys.screenshot_ready, (event: any) => {
       const base64Image = `data:image/png;base64,${event.payload}`
       localStorage.setItem("bgImage", base64Image)
       setBgImage(base64Image)

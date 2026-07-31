@@ -6,7 +6,8 @@
     "linux"
   ],
   "windows": [
-    "overlay"
+    "overlay",
+    "edit"
   ],
   "permissions": [
     "global-shortcut:default",

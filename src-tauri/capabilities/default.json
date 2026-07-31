@@ -3,7 +3,8 @@
   "identifier": "default",
   "description": "Capability for the overlay window",
   "windows": [
-    "overlay"
+    "overlay",
+    "edit"
   ],
   "permissions": [
     "core:default",

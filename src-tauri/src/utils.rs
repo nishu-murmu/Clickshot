@@ -1,13 +1,10 @@
 use crate::{capture, windows};
 use std::env;
-use tauri::{Manager};
 use xcap::Monitor;
 
 /// Function handler which opens up the initial window for taking screenshot.
 pub fn open_overlay(app: &tauri::AppHandle) {
-    if let Some(window) = app.get_webview_window("overlay") {
-        window.close().ok();
-    }
+    windows::open_background_window(&app);
     windows::open_overlay_window(&app);
     capture::capture_screenshot(&app);
 }
@@ -24,5 +21,5 @@ pub fn get_full_screenshot_in_background(app: &tauri::AppHandle) -> String {
         let base_64_str = capture::image_to_base64(image);
         capture::base64_to_image(base_64_str, app);
     }
-    String::from("Something went wrong")
+    String::from("Something went wrong while taking full screenshot in background")
 }

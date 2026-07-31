@@ -1,4 +1,4 @@
-use crate::utils;
+use crate::{config, utils};
 use base64::{engine::general_purpose, Engine};
 use image::{load_from_memory, ImageFormat, RgbaImage};
 use std::fs;
@@ -63,13 +63,11 @@ pub fn base64_to_image(base_64_str: String, app: &AppHandle) -> String {
                 Ok(res) => res,
                 Err(err) => {
                     eprintln!("Failed to load image from memory {:?}", err);
-                    return String::from("Failed to load image from memory")
+                    return String::from("Failed to load image from memory");
                 }
             };
             match image.to_rgb8().save(&path) {
-                Ok(res) => {
-                    res
-                },
+                Ok(res) => res,
                 Err(err) => {
                     eprintln!("Failed to parse in rgb8! {:?}", err);
                     return String::from("Failed to parse in rgb8!");
@@ -91,7 +89,7 @@ pub fn capture_screenshot(app: &AppHandle) -> Option<String> {
     if let Some(primary) = monitors.first() {
         let image = primary.capture_image().unwrap();
         let base_64_str = image_to_base64(image);
-        app.emit_to("overlay", "screenshot-ready", base_64_str)
+        app.emit_to("overlay", &config::emit_keys::SCREENSHOT_READY, base_64_str)
             .unwrap();
     }
     None

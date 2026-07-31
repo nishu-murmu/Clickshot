@@ -1,4 +1,4 @@
-use crate::utils;
+use crate::{utils, windows};
 use tauri::{
     menu::{Menu, MenuItem},
     tray::TrayIconBuilder,
@@ -30,6 +30,7 @@ pub fn init(app: &tauri::App) {
         .unwrap();
     tray.on_menu_event(|app, event| match event.id.as_ref() {
         "quit" => {
+            windows::close_background_window(app);
             app.exit(0);
             println!("App exited!");
         }
@@ -42,7 +43,7 @@ pub fn init(app: &tauri::App) {
             println!("Region Screenshot taken!");
         }
         _ => {
-            println!("Something went wrong!");
+            println!("Something went wrong in system tray!");
         }
     })
 }

@@ -1,5 +1,6 @@
 mod capture;
 mod commands;
+mod config;
 mod shortcuts;
 mod system_tray;
 mod utils;
@@ -15,10 +16,11 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            commands::close_overlay_command,
+            commands::close_overlay_window_command,
             commands::region_screenshot_command,
             commands::full_screenshot_command,
-            commands::open_edit_window_command
+            commands::open_edit_window_command,
+            commands::close_edit_window_command
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

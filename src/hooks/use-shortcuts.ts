@@ -7,8 +7,13 @@ const useShortcuts = () => {
   const isRegionActive = useAtomValue(atoms.isRegionActiveAtom);
   const bgImage = useAtomValue(atoms.bgImageAtom);
 
-  const escapeShortcut = (e: KeyboardEvent) => {
-    if (e.key === "Escape") invoke("close_overlay_command");
+  const escapeShortcut = (e: KeyboardEvent, window?: string) => {
+    if (e.key === "Escape") {
+      if (window == "edit") {
+        invoke("close_edit_window_command");
+      }
+      invoke("close_overlay_window_command");
+    }
   }
 
   const enterShortcut = () => {

@@ -1,0 +1,63 @@
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+}
+
+.main {
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  padding: 88px 24px 24px;
+}
+
+.icon {
+  height: 22px;
+  width: 22px;
+}
+
+.icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.96);
+  color: #0f172a;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  z-index: 10;
+}
+
+.icon-wrapper:active {
+  transform: scale(0.97);
+}
+
+.nav {
+  display: flex;
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 9999px;
+  z-index: 20;
+}
+
+.edit-window {
+  padding-top: 120px;
+}

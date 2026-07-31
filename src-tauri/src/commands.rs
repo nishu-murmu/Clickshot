@@ -2,8 +2,15 @@ use tauri::{Manager};
 use crate::{capture, windows};
 
 #[tauri::command]
-pub fn close_overlay_command(app: tauri::AppHandle) {
+pub fn close_overlay_window_command(app: tauri::AppHandle) {
     if let Some(has_overlay) = app.get_webview_window("overlay") {
+        has_overlay.close().ok();
+    }
+}
+
+#[tauri::command]
+pub fn close_edit_window_command(app: tauri::AppHandle) {
+    if let Some(has_overlay) = app.get_webview_window("edit") {
         has_overlay.close().ok();
     }
 }
