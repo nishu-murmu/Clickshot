@@ -1,6 +1,9 @@
 <div align="center">
+  
 # Clickshot
+
 ShareX like Screenshot Application for Linux.
+
 </div>
 
 ## Inspiration
