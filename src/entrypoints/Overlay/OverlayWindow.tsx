@@ -1,4 +1,4 @@
-import { invoke } from '@tauri-apps/api/core';
+import { invoke, convertFileSrc } from '@tauri-apps/api/core';
 import { emitTo, listen } from '@tauri-apps/api/event';
 import { useState, useRef, useEffect } from 'react';
 import { Stage, Layer, Transformer, Rect } from 'react-konva';
@@ -108,10 +108,11 @@ const OverlayWindow = () => {
     };
 
     listen(emitKeys.screenshot_ready, (event: any) => {
-      const base64Image = `data:image/png;base64,${event.payload}`
-      localStorage.setItem("bgImage", base64Image)
-      setBgImage(base64Image)
-    })
+      const filePath = event.payload;
+      const assetUrl = filePath.startsWith('http') || filePath.startsWith('asset://') ? filePath : convertFileSrc(filePath);
+      localStorage.setItem("bgImage", assetUrl);
+      setBgImage(assetUrl);
+    });
 
     window.addEventListener("keydown", handleKeyDown)
     window.addEventListener("focus", handleFocus);

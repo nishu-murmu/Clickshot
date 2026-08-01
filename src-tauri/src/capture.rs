@@ -88,8 +88,12 @@ pub fn capture_screenshot(app: &AppHandle) -> Option<String> {
     let monitors = Monitor::all().unwrap();
     if let Some(primary) = monitors.first() {
         let image = primary.capture_image().unwrap();
-        let base_64_str = image_to_base64(image);
-        app.emit_to("overlay", &config::emit_keys::SCREENSHOT_READY, base_64_str)
+        let temp_dir = std::env::temp_dir();
+        let temp_path = temp_dir.join("clickshot_temp.png");
+        image.save(&temp_path).ok();
+        
+        let file_path_str = temp_path.to_string_lossy().to_string();
+        app.emit_to("overlay", &config::emit_keys::SCREENSHOT_READY, file_path_str)
             .unwrap();
     }
     None

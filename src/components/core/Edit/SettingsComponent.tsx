@@ -1,8 +1,8 @@
 import { Settings } from "lucide-react"
 
-const SettingsComponent = () => {
+const SettingsComponent = ({onClick}: {onClick: () => void}) => {
   return (
-    <div className="icon-wrapper">
+    <div className="icon-wrapper" onClick={onClick}>
       <Settings className="icon"/>
     </div>
   )

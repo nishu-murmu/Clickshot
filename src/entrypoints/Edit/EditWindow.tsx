@@ -1,6 +1,7 @@
 import { listen } from '@tauri-apps/api/event';
 import { useState, useRef, useEffect } from 'react';
-import { Stage, Layer, Transformer, Rect } from 'react-konva';
+import { Stage, Layer, Transformer, Rect, Image as KonvaImage } from 'react-konva';
+import useImage from 'use-image';
 import useShortcuts from '@/hooks/use-shortcuts';
 import { useAtom } from 'jotai';
 import atoms from '@/atoms';
@@ -13,23 +14,48 @@ import LinkComponent from '@/components/core/Edit/LinkComponent';
 import UndoComponent from '@/components/core/Edit/UndoComponent';
 import RedoComponent from '@/components/core/Edit/RedoComponent';
 import SettingsComponent from '@/components/core/Edit/SettingsComponent';
-import InfoComponent from '@/components/core/Edit/InfoComponent';
 import CircleComponent from '@/components/core/Edit/CircleComponent';
 import SquareComponent from '@/components/core/Edit/SquareComponent';
+import { invoke } from '@tauri-apps/api/core';
+
+const EDIT_WINDOW_INSET = {
+  top: 80,
+  right: 40,
+  bottom: 40,
+  left: 40,
+};
 
 const EditWindow = () => {
   const [sel, setSel] = useState({ visible: false, x1: 0, y1: 0, x2: 0, y2: 0 });
   const [bgImage, setBgImage] = useAtom(atoms.bgImageAtom);
-  const getStageSize = () => ({
-    width: Math.max(320, Math.min(Math.floor(window.innerWidth * 0.84), window.innerWidth - 32)),
-    height: Math.max(240, Math.min(Math.floor(window.innerHeight * 0.76), window.innerHeight - 112)),
-  });
-  const [stageSize, setStageSize] = useState(getStageSize);
+  const [loadedImage] = useImage(bgImage || '');
+  
   const isDrawing = useRef(false);
   const trRef = useRef<any>(null);
   const rectRef = useRef<any>(null);
   const holePunchRef = useRef<any>(null);
-  const { escapeShortcut } = useShortcuts()
+  const { escapeShortcut } = useShortcuts();
+
+  // Calculate available container dimensions
+  const containerSize = {
+    width: Math.max(window.innerWidth - EDIT_WINDOW_INSET.left - EDIT_WINDOW_INSET.right, 0),
+    height: Math.max(window.innerHeight - EDIT_WINDOW_INSET.top - EDIT_WINDOW_INSET.bottom, 0)
+  };
+
+  // Calculate actual stage dimensions that tightly fit the image aspect ratio
+  const stageSize = (() => {
+    if (!loadedImage || !loadedImage.width || !loadedImage.height) {
+      return containerSize;
+    }
+    const scale = Math.min(
+      containerSize.width / loadedImage.width,
+      containerSize.height / loadedImage.height
+    );
+    return {
+      width: loadedImage.width * scale,
+      height: loadedImage.height * scale
+    };
+  })();
 
   const x = Math.min(sel.x1, sel.x2);
   const y = Math.min(sel.y1, sel.y2);
@@ -79,20 +105,7 @@ const EditWindow = () => {
 
   useEffect(() => {
     const handleKeyDown = async (e: KeyboardEvent) => {
-      // const bgImage = localStorage.getItem("bgImage") || ""
-      escapeShortcut(e, "edit")
-      if (e.key === "Enter" && Object.keys(holePunchRef) && holePunchRef.current.attrs.height && holePunchRef.current.attrs.width) {
-        // const { x, y, width, height } = holePunchRef.current.attrs
-        // const cropped_base_64_image = (await cropBase64ImageHandler(bgImage, x, y, width, height)) as string
-        // await invoke("region_screenshot_command", { cropped_base_64_image });
-        // invoke("close_overlay_window_command")
-      } else {
-        // invoke("open_Edit_window_command")
-        // self.postMessage({ data: bgImage }, "*")
-        // const response = await invoke("full_screenshot_command", { base_64_image: bgImage });
-        // console.log(response, 'response')
-        // invoke("close_overlay_window_command")
-      }
+      escapeShortcut(e, "edit");
     };
 
     const handleFocus = () => {
@@ -101,30 +114,28 @@ const EditWindow = () => {
       isDrawing.current = false;
     };
 
-    const handleResize = () => {
-      setStageSize(getStageSize());
-    };
-
     const unlisten = listen(emitKeys.send_base64_img_edit_window, (event: any) => {
-      console.log(event.payload.bgImage.slice(0, 224), 'in edit window')
-      const base64Image = event.payload.bgImage
-      localStorage.setItem("bgImage", base64Image)
-      setBgImage(base64Image)
-    })
+      const base64Image = event.payload.bgImage;
+      if (base64Image) {
+        localStorage.setItem("bgImage", base64Image);
+        setBgImage(base64Image);
+      }
+    });
 
-    window.addEventListener("keydown", handleKeyDown)
+    window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("focus", handleFocus);
-    window.addEventListener("resize", handleResize);
 
-    const bgImage = localStorage.getItem("bgImage") || ""
-    setBgImage(bgImage)
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown)
-      window.removeEventListener("focus", handleFocus);
-      window.removeEventListener("resize", handleResize);
-      unlisten.then(f => f())
+    const storedBgImage = localStorage.getItem("bgImage") || "";
+    if (storedBgImage) {
+      setBgImage(storedBgImage);
     }
-  }, [])
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("focus", handleFocus);
+      unlisten.then(f => f());
+    };
+  }, []);
 
   return (
     <div className='main'>
@@ -139,8 +150,9 @@ const EditWindow = () => {
         <UndoComponent />
         <RedoComponent />
         <LinkComponent />
-        <SettingsComponent />
-        <InfoComponent />
+        <SettingsComponent onClick={async () => {
+          invoke("open_settings_window_command");
+        }}/>
       </div>
       <Stage
         width={stageSize.width}
@@ -149,21 +161,21 @@ const EditWindow = () => {
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onClick={handleStageClick}
-        style={{
-          backgroundImage: `url(${bgImage})`,
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          backgroundSize: 'contain',
-        }}
         className='edit-window'
       >
         <Layer>
-          <Rect
-            x={0} y={0}
-            width={stageSize.width}
-            height={stageSize.height}
-            listening={false}
-          />
+          {/* Render screenshot image on Konva Canvas */}
+          {loadedImage && (
+            <KonvaImage
+              image={loadedImage}
+              x={0}
+              y={0}
+              width={stageSize.width}
+              height={stageSize.height}
+              listening={false}
+            />
+          )}
+
           <Rect
             ref={holePunchRef}
             x={x} y={y} width={w} height={h}
@@ -187,7 +199,6 @@ const EditWindow = () => {
             onDragMove={syncHolePunch}
             onTransform={syncHolePunch}
             onTransformEnd={() => {
-              // normalize scale back to 1 after resize
               const node = rectRef.current;
               node.setAttrs({
                 width: node.width() * node.scaleX(),
@@ -209,7 +220,6 @@ const EditWindow = () => {
           />
         </Layer>
       </Stage>
-
     </div>
   );
 };

@@ -39,6 +39,8 @@ export default defineConfig(async () => ({
       input: {
         overlay: resolve(__dirname, 'html/overlay.html'),
         edit: resolve(__dirname, 'html/edit.html'),
+        settings: resolve(__dirname, 'html/settings.html'),
+        about: resolve(__dirname, 'html/about.html'),
       },
     },
   },
